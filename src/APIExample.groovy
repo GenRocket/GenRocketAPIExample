@@ -23,8 +23,8 @@ def getConnection() {
 def emptyTables() {
   def sql = getConnection()
   def tables = [
-    'card', 'card_type', 'customer', 'customer_level','transaction',
-     'transaction_type', 'account','account_type', 'branch', 'user', 'card_pool'
+    'card', 'card_type', 'customer', 'customer_level', 'transaction',
+    'transaction_type', 'account', 'account_type', 'branch', 'user', 'card_pool'
   ]
 
   tables.each { table ->
@@ -52,16 +52,19 @@ def loadTestData() {
       api.scenarioRun()
     }
 
+    def branchCount = '1000'
+
     api.scenarioLoad("${scenarioPath}BranchRestScenario.grs")
-    api.domainSetLoopCount('Branch', '10')
+    api.domainSetLoopCount('Branch', branchCount)
     api.scenarioRun()
 
     api.scenarioLoad("${scenarioPath}CardPoolRestScenario.grs")
-    api.domainSetLoopCount('CardPool', '50')
+    api.domainSetLoopCount('CardPool', '30000')
     api.scenarioRun()
 
     api.scenarioLoad("${scenarioPath}OpenAccountRestScenario.grs")
-    api.domainSetLoopCount('OpenAccount', '10')
+    api.domainSetLoopCount('OpenAccount', '10000')
+    api.generatorParameterSet('OpenAccount.branchCode', 0, 'var2', branchCount)
     api.scenarioRun()
 
     println('All Done!')
