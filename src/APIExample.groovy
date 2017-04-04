@@ -13,8 +13,9 @@ import com.genRocket.engine.EngineAPI
 import com.genRocket.engine.EngineManual
 import groovy.sql.Sql
 
-emptyTables()
-loadTestData()
+//emptyTables()
+//loadTestData()
+simulation()
 
 def getConnection() {
   return Sql.newInstance("jdbc:mysql://localhost:3306/genrocket_bank", "root", "admin", "com.mysql.jdbc.Driver")
@@ -52,22 +53,45 @@ def loadTestData() {
       api.scenarioRun()
     }
 
-    def branchCount = '1000'
+    def branchCount = 1000
+    def cardPoolCount = 40000
+    def customerCount = 10000
 
     api.scenarioLoad("${scenarioPath}BranchRestScenario.grs")
-    api.domainSetLoopCount('Branch', branchCount)
+    api.domainSetLoopCount('Branch', branchCount.toString())
     api.scenarioRun()
 
     api.scenarioLoad("${scenarioPath}CardPoolRestScenario.grs")
-    api.domainSetLoopCount('CardPool', '30000')
+    api.domainSetLoopCount('CardPool', cardPoolCount.toString())
     api.scenarioRun()
 
     api.scenarioLoad("${scenarioPath}OpenAccountRestScenario.grs")
-    api.domainSetLoopCount('OpenAccount', '10000')
-    api.generatorParameterSet('OpenAccount.branchCode', 0, 'var2', branchCount)
+    api.domainSetLoopCount('OpenAccount', customerCount.toString())
+    api.generatorParameterSet('OpenAccount.branchCode', 0, 'var2', (branchCount - 1).toString())
     api.scenarioRun()
 
-    println('All Done!')
+    api.scenarioLoad("${scenarioPath}AccountWithdrawalRestScenario.grs")
+    api.scenarioRun()
+
+    println('Load Data All Done!')
+  } catch (GenRocketException e) {
+    println(e.getMessage())
+  }
+}
+
+def simulation() {
+  def fileSep = System.getProperty("file.separator")
+  def userHome = System.getProperty("user.home")
+  def scenarioPath = "${userHome}${fileSep}Downloads${fileSep}"
+
+  EngineAPI api = new EngineManual()
+
+  try {
+
+    api.scenarioLoad("${scenarioPath}AccountWithdrawalRestScenario.grs")
+    api.scenarioRun()
+
+    println('Simulation All Done!')
   } catch (GenRocketException e) {
     println(e.getMessage())
   }
