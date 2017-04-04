@@ -42,9 +42,6 @@ class Simulation {
   }
 
   def loadTestData() {
-    def fileSep = System.getProperty("file.separator")
-    def userHome = System.getProperty("user.home")
-    def scenarioPath = "${userHome}${fileSep}Downloads${fileSep}"
     def scenarios = [
       'AccountTypeRestScenario',
       'CardTypeRestScenario',
@@ -87,7 +84,15 @@ class Simulation {
 
     try {
       api.scenarioLoad("${scenarioPath}AccountWithdrawalRestScenario.grs")
-      api.domainSetLoopCount('DepositDays', 1.toString())
+      api.domainSetLoopCount('WithdrawalDays', 1.toString())
+      api.domainSetLoopCount('User', customerCount.toString())
+      api.scenarioRun()
+
+      api.scenarioLoad("${scenarioPath}AccountDepositRestScenario.grs")
+      api.domainSetLoopCount('User', customerCount.toString())
+      api.scenarioRun()
+
+      api.scenarioLoad("${scenarioPath}AccountTransferRestScenario.grs")
       api.domainSetLoopCount('User', customerCount.toString())
       api.scenarioRun()
 
