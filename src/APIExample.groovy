@@ -11,6 +11,7 @@
 import com.genRocket.GenRocketException
 import com.genRocket.engine.EngineAPI
 import com.genRocket.engine.EngineManual
+import com.genRocket.utils.ElapsedTime
 import groovy.sql.Sql
 
 new Simulation().simulationOne()
@@ -24,11 +25,37 @@ class Simulation {
   def cardPoolCount = 40000
   def customerCount = 10000
 
-  def getConnection() {
+  def static elapsedTime(long start) {
+    // Get elapsed time in milliseconds
+    long mills = System.currentTimeMillis() - start
+
+    // Get elapsed time in seconds
+    long sec = mills / 1000F
+
+    // Get elapsed time in minutes
+    long min = sec / 60
+
+    // Get elapsed time in hours
+    long hour = min / 60
+
+    // Get elapsed time in days
+    long day = hour / 24
+
+
+    if (day > 0)
+      return day + "d:" + hour % 24 + "h:" + min % 60 + "m:" + sec % 60 + "s"
+
+    if (hour > 0)
+      return hour % 24 + "h:" + min % 60 + "m:" + sec % 60 + "s"
+
+    return min % 60 + "m:" + sec % 60 + "s"
+  }
+
+  def static getConnection() {
     return Sql.newInstance("jdbc:mysql://localhost:3306/genrocket_bank", "root", "admin", "com.mysql.jdbc.Driver")
   }
 
-  def emptyTables() {
+  def static emptyTables() {
     def sql = getConnection()
     def tables = [
       'card', 'card_type', 'customer', 'customer_level', 'transaction',
@@ -41,7 +68,7 @@ class Simulation {
     }
   }
 
-  def getAverageBalance(String accountType) {
+  def static getAverageBalance(String accountType) {
     def sql = getConnection()
     def query = """select round(avg(aco.balance)) as avg from account aco
                    join account_type act on act.id = aco.account_type_id
@@ -83,6 +110,8 @@ class Simulation {
   }
 
   public simulationOne() {
+    def startTime = System.currentTimeMillis()
+
     emptyTables()
     loadTestData()
 
@@ -104,7 +133,7 @@ class Simulation {
         // Withdrawal 100.00, 150.00, 200.00 or 250.00 from checking
         api.scenarioLoad("${scenarioPath}AccountWithdrawalRestScenario.grs")
         api.domainSetLoopCount('WithdrawalDays', 1.toString())
-        api.generatorParameterSet('User.amount', 0, 'list', ['100','150','200','250'])
+        api.generatorParameterSet('User.amount', 0, 'list', ['100', '150', '200', '250'])
         api.domainSetLoopCount('User', customerCount.toString())
         api.scenarioRun()
 
@@ -145,6 +174,7 @@ class Simulation {
       }
     }
 
-    println('Simulation All Done!')
+    def totalTime = ElapsedTime.elapsedTime(startTime)
+    println("Simulation Complete! - Total Time: ${totalTime}")
   }
 }
