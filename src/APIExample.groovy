@@ -132,7 +132,7 @@ class Simulation {
       try {
         // Withdrawal 100.00, 150.00, 200.00 or 250.00 from checking
         api.scenarioLoad("${scenarioPath}AccountWithdrawalRestScenario.grs")
-        api.domainSetLoopCount('WithdrawalDays', 1.toString())
+        api.receiverParameterSet('User','RealtimeTestReceiver','threadCount', 10.toString())
         api.generatorParameterSet('User.amount', 0, 'list', ['100', '150', '200', '250'])
         api.domainSetLoopCount('User', customerCount.toString())
         api.scenarioRun()
@@ -143,6 +143,7 @@ class Simulation {
           // Switch fromCardNumber to Savings and toCardNumber to Checking
           // Transfer 750 from savings into checking
           api.scenarioLoad("${scenarioPath}AccountTransferRestScenario.grs")
+          api.receiverParameterSet('User','RealtimeTestReceiver','threadCount', 10.toString())
           api.generatorParameterSet('User.fromCardNumber', 0, 'equation', 'var1 + var1')
           api.generatorParameterSet('User.toCardNumber', 0, 'equation', 'var1 + var1 - 1')
           api.generatorParameterSet('User.amount', 0, 'value', 750.00.toString())
@@ -155,12 +156,14 @@ class Simulation {
         if (avg <= 1500) {
           // Deposit 2000.00 into checking
           api.scenarioLoad("${scenarioPath}AccountDepositRestScenario.grs")
+          api.receiverParameterSet('User','RealtimeTestReceiver','threadCount', 10.toString())
           api.domainSetLoopCount('User', customerCount.toString())
           api.generatorParameterSet('User.amount', 0, 'value', 2000.00.toString())
           api.scenarioRun()
 
           // Transfer 1500.00 from checking to savings
           api.scenarioLoad("${scenarioPath}AccountTransferRestScenario.grs")
+          api.receiverParameterSet('User','RealtimeTestReceiver','threadCount', 10.toString())
           api.generatorParameterSet('User.amount', 0, 'value', 1500.00.toString())
           api.domainSetLoopCount('User', customerCount.toString())
           api.scenarioRun()
