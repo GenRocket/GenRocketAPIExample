@@ -2,12 +2,6 @@
  * Created by htaylor on 4/2/17.
  */
 
-//println 'exists >>> ' + new File("/Users/htaylor/DevTools/genrocket-3.4.0/lib/genrocket-3.4.0.jar").exists()
-
-//this.class.classLoader.rootLoader.addURL(new URL("file:///Users/htaylor/DevTools/genrocket-3.4.0/lib/genrocket-3.4.0.jar"))
-//this.class.classLoader.rootLoader.addURL(new URL("file:///Users/htaylor/DevTools/genrocket-3.4.0/lib/gr-generators-3.4.0.3.jar"))
-//this.class.classLoader.rootLoader.addURL(new URL("file:///Users/htaylor/DevTools/genrocket-3.4.0/lib/gr-receivers-3.4.0.1.jar"))
-
 import com.genRocket.GenRocketException
 import com.genRocket.engine.EngineAPI
 import com.genRocket.engine.EngineManual
@@ -40,7 +34,6 @@ class Simulation {
 
     // Get elapsed time in days
     long day = hour / 24
-
 
     if (day > 0)
       return day + "d:" + hour % 24 + "h:" + min % 60 + "m:" + sec % 60 + "s"
